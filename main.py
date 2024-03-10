@@ -1,5 +1,5 @@
 from random import randint
-
+from datetime import datetime
 from flask import Flask, request, jsonify,render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
@@ -7,6 +7,7 @@ from sqlalchemy import func
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres.ocgkkizcykkwsdzxjrzc:basededatosflask@aws-0-eu-central-1.pooler.supabase.com:5432/postgres'
 db = SQLAlchemy(app)
+datetime = datetime.now()
 class mensajes(db.Model):
     __tablename__ = 'mensajes'
     id = db.Column(db.Integer, primary_key=True,name='id')
@@ -22,7 +23,7 @@ def indexPage():
 @app.route('/enviar_mensaje', methods=['POST'])
 def enviar_mensaje():
     data = request.get_json()
-    random_id = randint(1,100)
+    random_id = int(datetime.timestamp())
     nuevo_mensaje = mensajes(
         id = random_id,
         sender=data['sender'],
