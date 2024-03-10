@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #chat-box {
+            width: 400px;
+            margin: 20px auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #mensaje-recibido p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-box">
+        <h2>Chat App</h2>
+        <div>
+            <label for="sender">Tu nombre:</label>
+            <input type="text" id="sender" placeholder="Tu nombre">
+        </div>
+        <div>
+            <label for="receiver">Destinatario:</label>
+            <input type="text" id="receiver" placeholder="Destinatario">
+        </div>
+        <div>
+            <label for="message">Mensaje:</label>
+            <input type="text" id="message" placeholder="Escribe tu mensaje">
+        </div>
+        <button onclick="enviarMensaje()">Enviar Mensaje</button>
+        <button onclick="descargarMensajes()">Descargar Mensajes</button>
+        <div id="mensaje-recibido"></div>
+    </div>
+
+    <script>
+        function enviarMensaje() {
+    const sender = document.getElementById('sender').value;
+    const receiver = document.getElementById('receiver').value;
+    const content = document.getElementById('message').value;
+
+    fetch('/enviar_mensaje', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            sender: sender,
+            receiver: receiver,
+            message: content,
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    });
+}
+        function descargarMensajes() {
+            const receiver = document.getElementById('sender').value;
+
+             fetch(`/descargar_mensajes/${receiver}`)
+                .then(response => response.json())
+                .then(data => {
+                    const mensajeRecibido = document.getElementById('mensaje-recibido');
+                    mensajeRecibido.innerHTML = '';
+
+                    if (data.mensajes) {
+                        data.mensajes.forEach(mensaje => {
+                            mensajeRecibido.innerHTML += `<p><strong>${mensaje.from}:</strong> ${mensaje.message}</p>`;
+                        });
+                    } else {
+                        mensajeRecibido.innerHTML = "<p>No hay mensajes disponibles.</p>";
+                    }
+                })
+                .catch(error => console.error('Error al descargar mensajes:', error));
+        }
+    </script>
+</body>
+</html>
+
+
